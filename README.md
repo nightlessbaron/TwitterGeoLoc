@@ -76,4 +76,4 @@ TwitterGeoLoc/
 ## Citation
 
 ## Contact
-Varad Pimpalkhute [pimpalkhutevarad@gmail.com](pimpalkhutevarad@gmail.com)
+Varad Pimpalkhute <pimpalkhutevarad@gmail.com>
