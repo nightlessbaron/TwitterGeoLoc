@@ -1,0 +1,22 @@
+usage: geo_eval.py [-h] --output OUTPUT --oracle ORACLE --type {TWEET,USER}
+
+Evaluation scripts for WNUT 2016 shared task. Output format: submission file,
+submission type, accuracy, median error distance, mean error distance.
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --output OUTPUT      Submission JSON file
+  --oracle ORACLE      Labelled oracle data JSON file
+  --type {TWEET,USER}  Submission type, either TWEET or USER
+
+
+Example 1: to evaluate TWEET level results
+YOUR_USER_NAME$ clear;python geo_eval.py --output team_name.output.tweet.json --oracle team_name.oracle.tweet.json --type TWEET
+team_name.output.tweet.json, TWEET, 0.6667, 133.2487, 5832.5581
+
+Example 2: to evaluate USER level results
+YOUR_USER_NAME$ clear;python geo_eval.py --output team_name.output.user.json --oracle team_name.oracle.user.json --type USER
+team_name.output.user.json, USER, 0.3333, 17490.4886, 11660.3218
+
+
+Tested with Python 2.7
