@@ -8,7 +8,6 @@ import warnings
 from ..names import *
 from ..resolver import AbstractResolver, register
 
-
 @register('geoname')
 class GeonameResolver(AbstractResolver):
     """A resolver that locates a tweet by matching the tweet author's
@@ -40,11 +39,18 @@ class GeonameResolver(AbstractResolver):
 
         tweet_id = tweet.get('place', {}).get('id', '')
             
-        if not tweet_id:
+        if tweet_id == '':
             return None
 
-        geoid, city, state, country = self.tweetid_to_geoid.get(tweet_id, '')
+        geoid, city, state, country = self.tweetid_to_geoid.get(tweet_id, ['','','',''])
         if geoid == '':
-            print('Information for', tweet_id, 'is not present in database. Recommend to add it')
+            print(tweet_id, 'is not present in database. Recommended to add it')
+            # TO-DD
+            # Return an approximate location by searching through the location database.
+            return None
+        if self.geoid_to_location.get(geoid, '') == '':
+            print(geoid, 'is missing from location database.')
+            # TO-DO
+            # Add the respective geoname id information in database.
             return None
         return (False, self.geoid_to_location[geoid])
