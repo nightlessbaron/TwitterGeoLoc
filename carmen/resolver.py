@@ -252,7 +252,7 @@ def get_resolver(order=None, options=None, modules=None):
                                                         # document.
     if order is None:
         #order = ('place', 'geocode', 'profileplus', 'contentplus') # Default order
-        order = ('place', 'geoname', 'profileplus')
+        order = ('geoname', 'place', 'profileplus')
     else:
         order = tuple(order)
     if options is None:

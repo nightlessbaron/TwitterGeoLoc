@@ -49,21 +49,13 @@ def open_file(filename, mode):
 
 def main():
     args = parse_args()
-    warnings.simplefilter('always') # Causes all warnings to be always triggered.
+    warnings.simplefilter('always')
     resolver_kwargs = {}
-    if args.order is not None: # args.order gives an order in which resolvers are triggered
-        resolver_kwargs['order'] = args.order.split(',') # order argument is a list of resolver names.
-    if args.options is not None:                         # ['geocode', 'place', 'profile']
-        #resolver_kwargs['options'] = json.loads(args.options) # json dictionary of resolver options. 
+    if args.order is not None:
+        resolver_kwargs['order'] = args.order.split(',') 
+    if args.options is not None:  
         resolver_kwargs['options'] = ast.literal_eval(args.options)
-    #print(resolver_kwargs['options'])
-    # For example, {'geocode': {'max_distance' : 50}}
-    #print(resolver_kwargs)
-    #resolver_kwargs['country'] = args.country
-    resolver = get_resolver(**resolver_kwargs) # This returns a location resolver.
-    #print("This is the resolver:", resolver.resolvers) # Resolvers : {geocode, profile, place}
-    # Now, we can extract the individual resolvers.
-    #print("This one is geocode:", resolver.resolvers[0]) # Returns a resolver along with its place object
+    resolver = get_resolver(**resolver_kwargs)
 
     resolver.load_locations(location_file=args.location_file)
     # Variables for statistics.
@@ -72,9 +64,10 @@ def main():
     resolution_method_counts = collections.defaultdict(int)
     skipped_tweets = resolved_tweets = total_tweets = 0
     
-    with open_file(args.input_file, 'rb') as input_file, open_file(args.output_file, 'wb') as output_file:#, open('analysis.csv', 'a') as file:
-        #file_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    with open_file(args.input_file, 'rb') as input_file, open_file(args.output_file, 'wb') as output_file:
         for i, input_line in enumerate(input_file):
+            if i == 200:
+                break
             # Show warnings from the input file, not the Python source code.
             def showwarning(message, category, filename, lineno,
                             file=sys.stderr, line=None):
@@ -113,24 +106,15 @@ def main():
                 tweet['location'] = location
                 # More statistics.
                 resolution_method_counts[location.resolution_method] += 1
-                # Adding location analysis report 
-                #file_writer.writerow([str(i), str(location)])
                 user_name = tweet.get('user',{}).get('screen_name', '')
-                #with open('analysis.txt', 'a') as ff:
-                #    ff.write(str(i) + '\t' + user_name + '\t' + str(location) + '\n')
-                #print(i, location)
                 if location.city:
                     city_found += 1
-                    #print(location.city)
                 elif location.county:
                     county_found += 1
-                    #print(location.county)
                 elif location.state:
                     state_found += 1
-                    #print(location.state)
                 elif location.country:
                     country_found += 1
-                    #print(location.country)
                 resolved_tweets += 1
             json_output = json.dumps(tweet, cls=LocationEncoder).encode()
             output_file.write(json_output)
@@ -157,8 +141,6 @@ def main():
 
 if __name__ == '__main__':
     try:
-        #os.remove('analysis.txt')
-        #os.remove('analysis_locations.txt')
         main()
     except:
         main()
