@@ -28,7 +28,6 @@ TwitterGeoLoc/
 ├─ carmen/
 │  ├─ data/
 │  │  ├─ gpkg_radius_all.tsv
-│  │  ├─ locations.json
 │  │  ├─ locations_error_resolved_v3.json
 │  │  ├─ on_record.json
 │  ├─ models/
@@ -50,9 +49,9 @@ TwitterGeoLoc/
 │  ├─ names.py
 │  ├─ resolver.py
 ├─ dataset/
-│  ├─ data/
-│  ├─ evaluation/
-│  ├─ test_labels/
+│  ├─ geotext.json
+│  ├─ arxiv_geo.json
+│  ├─ sample_dataset.json
 ├─ error-analysis/
 │  ├─ analysis.csv
 │  ├─ output.json
@@ -61,7 +60,8 @@ TwitterGeoLoc/
 │  ├─ ...
 ├─ .gitattributes
 ├─ README.md
-└─ setup.py
+├─ process_location_file.py
+└─ experiments.py
 ```
 
 ## Usage
