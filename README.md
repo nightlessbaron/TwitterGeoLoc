@@ -18,8 +18,7 @@ The above four instances are ordered in a decreasing order of importance with th
 7. Performance benchmarked with other popular tools.
 There's a lot of room for improving `TweetGeoLoc`. Depending on how the system develops, we may consider seperating it from `carmen` and build our own API. We are happy to receive contributions. Please check the instructions in the **Contributions** Section for contributing.
 
-## Quick Start
-
+## Installation and Quick Start
 
 ## Directory Structure
 The directory structure after installation and downloading the models should be:
@@ -29,7 +28,6 @@ TwitterGeoLoc/
 │  ├─ data/
 │  │  ├─ gpkg_radius_all.tsv
 │  │  ├─ locations.json
-│  │  ├─ locations_error_resolved_v3.json
 │  │  ├─ on_record.json
 │  ├─ models/
 │  │  ├─ model_brazil.bin
