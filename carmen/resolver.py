@@ -45,7 +45,7 @@ class AbstractResolver(ABC):
         an internal location database is used."""
         if location_file is None:
             #contents = pkgutil.get_data(__package__, 'data/locations.json')
-            contents = pkgutil.get_data(__package__, 'data/locations_error_resolved_v3.json')
+            contents = pkgutil.get_data(__package__, 'data/locations.json') # Be careful, changed locations__error_resolved_v3 to locations
             contents_string = contents.decode("utf-8")
             locations = contents_string.split('\n')
         else:
