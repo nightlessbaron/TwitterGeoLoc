@@ -42,14 +42,14 @@ def loading_unique_id():
 
 #-------------------------------------------------
 
-def modify_json():
+def modify_json(file1, file2):
 	import json, os
-	with open('dataset/twitter_geo.json', 'r') as ff, open('dataset/arxiv_geo.json', 'a', encoding='utf-8') as ag:
+	with open(file1, 'r') as ff, open(file2, 'a', encoding='utf-8') as ag:
 		data = json.load(ff)
 		for itr in data:
 			json.dump(itr, ag)
 			ag.write('\n')
-	os.remove('dataset/twitter_geo.json')
+	os.remove('dataset/00_other.json')
 
 # ---------------------------------------------------
 
@@ -67,4 +67,4 @@ def unique_prof_loc():
 				plr.write('\n')
 
 if __name__ == '__main__':
-	unique_prof_loc()
+	modify_json('dataset/00_other.json', 'dataset/00_other_modified.json')
