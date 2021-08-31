@@ -18,7 +18,23 @@ class GeonameResolver(AbstractResolver):
     def __init__(self):
         self.geoid_to_location = {}
         self.tweetid_to_geoid = {}
+        self.tweets_included = {}
+        self.geoid_included = {}
         self.add_id_table()
+        self.add_tweets()
+        self.add_geoid()
+
+    def add_tweets(self):
+        with open('missing_tweet_id.json', 'r') as mtir:
+            for line in mtir.readlines():
+                json_line = json.loads(line)
+                self.tweets_included.update(json_line)
+
+    def add_geoid(self):
+        with open('missing_geoname_id.json', 'r') as mgir:
+            for line in mgir.readlines():
+                json_line = json.loads(line)
+                self.geoid_included.update(json_line)
 
     def add_id_table(self):
         """Load tweet_id into this resolver from the given
@@ -34,8 +50,11 @@ class GeonameResolver(AbstractResolver):
         self.geoid_to_location[str(geoid)] = location
 
     def resolve_tweet(self, tweet):
-        if tweet['place'] == None:
-            return None
+        try:
+            if tweet['place'] == None:
+                return None
+        except:
+            return None # Deleted tweet with no information
 
         tweet_id = tweet.get('place', {}).get('id', '')
             
@@ -44,12 +63,22 @@ class GeonameResolver(AbstractResolver):
 
         geoid, city, state, country = self.tweetid_to_geoid.get(tweet_id, ['','','',''])
         if geoid == '':
-            print(tweet_id, 'is not present in database. Recommended to add it')
+            if tweet_id not in self.tweets_included:
+                self.tweets_included[tweet_id] = self.tweetid_to_geoid[tweet_id]
+                with open('missing_tweet_id.json', 'a') as mti:
+                    json.dump({tweet_id: self.tweetid_to_geoid[tweet_id]}, mti)
+                    mti.write('\n')
             # TO-DD
             # Return an approximate location by searching through the location database.
             return None
         if self.geoid_to_location.get(geoid, '') == '':
-            print(geoid, 'is missing from location database.')
+            if geoid not in self.geoid_included:
+                self.geoid_included[geoid] = 1
+                with open('missing_geoname_id.json', 'a') as mgi:
+                    json.dump({geoid: 1}, mgi)
+                    mgi.write('\n')
+            else:
+                self.geoid_included[geoid] += 1
             # TO-DO
             # Add the respective geoname id information in database.
             return None

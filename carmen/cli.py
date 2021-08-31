@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from __future__ import print_function
-
+import unidecode
 import argparse
 import collections
 import gzip
@@ -46,6 +46,47 @@ def open_file(filename, mode):
     else:
         return open(filename, mode)
 
+def get_info(data):
+    # ID, Place, User ID, Location, Description, Tweet
+    if data.get('user', {}).get('description', None) != None:
+        desc = unidecode.unidecode(data.get('user', {}).get('description', None)).replace('\n\n', '').replace('\n', '')
+    else:
+        desc = data.get('user', {}).get('description', None)
+    tweet = unidecode.unidecode(data.get('text', '')).replace('\n\n', '').replace('\n', '')
+    try:
+        if data['place'] == None:
+            return [data.get('id', None), None, data.get('user', {}).get('id', None), data.get('user', {}).get('location', None), desc, tweet]
+    except:
+        return [data['delete']['status']['id'], None, data['delete']['status']['user_id'], None, None, None]
+    return [data.get('id', None), data.get('place', {}).get('full_name', None), data.get('user', {}).get('id', None), data.get('user', {}).get('location', None), desc, tweet]
+
+def save_file_evaluate(itr, tweet, location, filename, demand=None):
+    with open('evaluate_'+filename+'.csv', 'a', encoding='utf-8') as fg:
+        # ID, Place, User ID, Location, resolved_place, method, Description, Tweet
+        evaluate_data = get_info(tweet)
+        ide, place, user_id, location_name, desc, content = evaluate_data
+        resolved_place, method = None, None
+        if location != None:
+            resolved_place = location.city + ' ' + location.state + ' ' + location.country
+            method = location.resolution_method
+        ide = str(ide) if ide != None else 'None'
+        place = 'None' if place == None else place
+        user_id = str(user_id) if user_id != None else 'None'
+        location_name = 'None' if location_name == None else location_name 
+        resolved_place = 'None' if resolved_place == None else resolved_place
+        method = 'None' if method == None else method
+        desc = 'None' if desc == None else desc
+        content = 'None' if content == None else content
+        demand = method if demand == None else demand
+        to_write = ide + ',' + place + ',' + user_id + ',' + location_name + ',' + \
+        resolved_place + ',' + method + ',' + desc + ',' + content
+        if itr == 0:
+            fg.write('Id' + ',' + 'Place' + ',' + 'User ID' + ',' + 'Location' + ',' + 'Resolution'\
+            + ',' + 'Method' + ',' + 'Description' + ',' + 'Tweet' + '\n')
+        if itr < 200 and method == demand:
+            fg.write(to_write + '\n')
+            itr += 1
+        return itr
 
 def main():
     args = parse_args()
@@ -65,9 +106,8 @@ def main():
     skipped_tweets = resolved_tweets = total_tweets = 0
     
     with open_file(args.input_file, 'rb') as input_file, open_file(args.output_file, 'wb') as output_file:
+        itr, no_itr = 0, 0 # resolved, unresolved 
         for i, input_line in enumerate(input_file):
-            if i == 200:
-                break
             # Show warnings from the input file, not the Python source code.
             def showwarning(message, category, filename, lineno,
                             file=sys.stderr, line=None):
@@ -116,6 +156,10 @@ def main():
                 elif location.country:
                     country_found += 1
                 resolved_tweets += 1
+                #itr = save_file_evaluate(tweet, location, 'geo', 'geoname')
+                itr = save_file_evaluate(itr, tweet, location, 'resolved')
+            else:
+                no_itr = save_file_evaluate(no_itr, tweet, None, 'unresolved')
             json_output = json.dumps(tweet, cls=LocationEncoder).encode()
             output_file.write(json_output)
             output_file.write(bytes('\n'.encode(encoding='ascii')))

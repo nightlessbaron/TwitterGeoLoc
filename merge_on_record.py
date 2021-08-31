@@ -28,7 +28,7 @@ def merge_on_records():
 def analyze_prev_record():
 	temp_dict = {}
 	count = 0
-	with open('MetaPainting/on_record.json', 'r') as f2:
+	with open('on_record_old.json', 'r') as f2:
 		for rec in json.load(f2):
 			if next(iter(rec.keys())) in temp_dict:
 				temp_dict[next(iter(rec.keys()))] += 1
