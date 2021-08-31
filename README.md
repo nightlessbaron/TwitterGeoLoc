@@ -104,6 +104,20 @@ TwitterGeoLoc/
 
 ## Usage
 
+### Built-in Resolvers
+Alongside the already three inbuilt resolvers in Carmen namely: `place`, `geocode`, and `profile` resolvers, we proposed a few more alternatives that are able to capture more finer details present in the user's tweet and profile.
+To know about Carmen's pre-built resolvers in detail, please check their [docs](https://carmen.readthedocs.io/en/v0.0.3/resolvers.html)
+
+1. `place` (carmen) resolver: Maps the twitter locations to known locations by name. If unresolved, it maps the unknown place or city, heirarchically to the known state or country name.
+2. `geocode` (carmen) resolver:  Maps the location to the nearest known location using the coordinates of the unknown location. Uses `max_distance` option to restrict the search window of mapping the location.
+3. `profile` (carmen) resolver: Maps the location present in the location field of user's profile to a known location name. Performance generally depends on how well the location search database captures information.
+4. `geoname` (our) resolver: Maps the `id` present in `place` field to `geoname id`. This standardizes the location information and speeds up the search. Benchmark results show that it is able to capture location information more precisely than `place` resolver.
+5. `profileplus` (our) resolver: Resolves unknown location to a known location by taking into consideration *Population Heuristics*, and compiling a rich location database. Thus, `profileplus` is able to capture more finer details as compared to `profile` resolver. Some popular locations are again mapped to their `geoname id`, hence resulting in increased performance.
+6. `bioplus` (our) resolver: Extracts mentions of locations in description on user's profile using NER. Maps the unknown location to known location present in the location database. Aggregates on the multiple mentions of locations in the description.
+7. `contentplus` (our) resolver: Trains `fasttext` models using supervised learning on a set of tweets by users from various locations. There's an option for users to resolve the tweets country-wise in states, or a global city-wise resolution. The first approach is more robust to errors than the second approach.
+
+*Note: `bioplus` and `contentplus` resolutions are prone to errors, thus resolutions marked with red flag in the analysis output file are recommended to be cross-checked by the user. Users will need to download our pre-trained models from [here](), and store them in `models/` directory*  
+
 ## Tutorials
 
 ## Contributions
